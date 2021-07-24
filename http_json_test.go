@@ -3,7 +3,10 @@ package benchmarks
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 	"testing"
 	"time"
 
@@ -13,14 +16,25 @@ import (
 func init() {
 	go httpjson.Start()
 	time.Sleep(time.Second)
+	s, err := strconv.ParseInt(os.Args[len(os.Args)-1], 10, 32)
+	if err != nil {
+		panic(err)
+	}
+	scale = int(s)
+	fmt.Println("scale:", scale)
+	time.Sleep(time.Second)
 }
 
 func BenchmarkHTTPJSON(b *testing.B) {
-	client := &http.Client{}
-
-	for n := 0; n < b.N; n++ {
-		doPost(client, b)
+	for i := 0; i <= scale; i++ {
+		waitgroup.Add(1)
+		client := &http.Client{}
+		for n := 0; n < b.N; n++ {
+			doPost(client, b)
+		}
 	}
+	waitgroup.Wait()
+
 }
 
 func doPost(client *http.Client, b *testing.B) {
