@@ -16,6 +16,7 @@ import (
 
 var scale int
 var waitgroup sync.WaitGroup
+var packageCount int
 
 func init() {
 	go grpcprotobuf.Start()
@@ -23,31 +24,44 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	pc, err := strconv.ParseInt(os.Args[len(os.Args)-2], 10, 32)
+	if err != nil {
+		panic(err)
+	}
+	packageCount = int(pc)
 	scale = int(s)
-	fmt.Println("scale:", scale)
+	fmt.Println("grpc scale:", scale)
+	fmt.Println("grpc packageCount:", packageCount)
 	time.Sleep(time.Second)
 }
 
-func BenchmarkGRPCProtobuf(b *testing.B) {
+func TestBenchmarkGRPCProtobuf(t *testing.T) {
+	timeBegin := time.Now()
+	var timeRun time.Duration
 	for i := 0; i <= scale; i++ {
 		waitgroup.Add(1)
-		go func() {
+		go func(timeRun *time.Duration) {
+			tmpTime := time.Now()
 			conn, err := g.Dial("127.0.0.1:60000", g.WithInsecure())
 			if err != nil {
-				b.Fatalf("grpc connection failed: %v", err)
+				t.Fatalf("grpc connection failed: %v", err)
 			}
 
 			client := proto.NewAPIClient(conn)
-			for n := 0; n < b.N; n++ {
-				doGRPC(client, b)
+			for n := 0; n < packageCount; n++ {
+				doGRPC(client, t)
 			}
 			waitgroup.Done()
-		}()
+			Duration := time.Since(tmpTime)
+			fmt.Printf("grpc Parse time is %+v\n", Duration)
+		}(&timeRun)
 	}
+	Duration := time.Since(timeBegin)
+	fmt.Printf("grpc time is %+v\n", Duration)
 	waitgroup.Wait()
 }
 
-func doGRPC(client proto.APIClient, b *testing.B) {
+func doGRPC(client proto.APIClient, t *testing.T) {
 	resp, err := client.CreateUser(context.Background(), &proto.User{
 		Email:    "foo@bar.com",
 		Name:     "Bench",
@@ -55,10 +69,10 @@ func doGRPC(client proto.APIClient, b *testing.B) {
 	})
 
 	if err != nil {
-		b.Fatalf("grpc request failed: %v", err)
+		t.Fatalf("grpc request failed: %v", err)
 	}
 
 	if resp == nil || resp.Code != 200 || resp.User == nil || resp.User.Id != "1000000" {
-		b.Fatalf("grpc response is wrong: %v", resp)
+		t.Fatalf("grpc response is wrong: %v", resp)
 	}
 }
