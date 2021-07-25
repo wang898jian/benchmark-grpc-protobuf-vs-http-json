@@ -56,8 +56,8 @@ func TestBenchmarkGRPCProtobuf(t *testing.T) {
 			fmt.Printf("Grpc total parse time is %+v, avg time is %+vns\n", Duration, int(Duration)/packageCount)
 		}(&timeRun)
 	}
-	Duration := time.Since(timeBegin)
 	waitgroup.Wait()
+	Duration := time.Since(timeBegin)
 	fmt.Printf("grpc main time is %+v\n", Duration)
 }
 

@@ -93,8 +93,8 @@ func TestBenchmarkHTTPJSON(t *testing.T) {
 			fmt.Printf("HTTPJSON total parse time is %+v, avg time is %+vns\n", Duration, int(Duration)/pc)
 		}(&timeRun)
 	}
-	Duration := time.Since(timeBegin)
 	wg.Wait()
+	Duration := time.Since(timeBegin)
 	fmt.Printf("HTTPJSON main time is %+v\n", Duration)
 }
 
