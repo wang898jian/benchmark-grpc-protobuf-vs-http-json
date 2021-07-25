@@ -62,11 +62,11 @@ func TestBenchmarkHTTPJSON(t *testing.T) {
 			}
 			wg.Done()
 			Duration := time.Since(tmpTime)
-			fmt.Printf("HTTPJSON Parse time is %+v\n", Duration)
+			fmt.Printf("HTTPJSON total parse time is %+v, avg time is %+vns\n", Duration, int(Duration)/pc)
 		}(&timeRun)
 	}
 	Duration := time.Since(timeBegin)
-	fmt.Printf("HTTPJSON time is %+v\n", Duration)
+	fmt.Printf("HTTPJSON main time is %+v\n", Duration)
 	wg.Wait()
 }
 

@@ -53,11 +53,11 @@ func TestBenchmarkGRPCProtobuf(t *testing.T) {
 			}
 			waitgroup.Done()
 			Duration := time.Since(tmpTime)
-			fmt.Printf("grpc Parse time is %+v\n", Duration)
+			fmt.Printf("HTTPJSON total parse time is %+v, avg time is %+vns\n", Duration, int(Duration)/packageCount)
 		}(&timeRun)
 	}
 	Duration := time.Since(timeBegin)
-	fmt.Printf("grpc time is %+v\n", Duration)
+	fmt.Printf("grpc main time is %+v\n", Duration)
 	waitgroup.Wait()
 }
 
