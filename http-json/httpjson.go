@@ -3,6 +3,7 @@ package httpjson
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"net/mail"
@@ -31,6 +32,7 @@ type Response struct {
 
 // CreateUser handler
 func CreateUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("receive a request from:", r.RemoteAddr, r.Header)
 	decoder := json.NewDecoder(r.Body)
 	var user User
 	decoder.Decode(&user)

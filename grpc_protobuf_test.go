@@ -22,11 +22,11 @@ func init() {
 	go grpcprotobuf.Start()
 	s, err := strconv.ParseInt(os.Args[len(os.Args)-1], 10, 32)
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
 	pc, err := strconv.ParseInt(os.Args[len(os.Args)-2], 10, 32)
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
 	packageCount = int(pc)
 	scale = int(s)

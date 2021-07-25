@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -23,12 +24,12 @@ func init() {
 	time.Sleep(time.Second)
 	s, err := strconv.ParseInt(os.Args[len(os.Args)-1], 10, 32)
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
 	sc = int(s)
 	packageCount, err := strconv.ParseInt(os.Args[len(os.Args)-2], 10, 32)
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
 	pc = int(packageCount)
 	fmt.Println("httpjson scale:", sc)
@@ -48,11 +49,38 @@ func init() {
 //	waitgroup.Wait()
 //
 //}
+const (
+	MaxIdleConns        int = 100
+	MaxIdleConnsPerHost int = 100
+	IdleConnTimeout     int = 90
+)
 
 func TestBenchmarkHTTPJSON(t *testing.T) {
 	timeBegin := time.Now()
 	var timeRun time.Duration
-	client := &http.Client{}
+	//// DefaultTransport is the default implementation of Transport and is
+	//// used by DefaultClient. It establishes network connections as needed
+	//// and caches them for reuse by subsequent calls. It uses HTTP proxies
+	//// as directed by the $HTTP_PROXY and $NO_PROXY (or $http_proxy and
+	//// $no_proxy) environment variables.
+	client := &http.Client{
+
+		//}
+		Transport: &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
+			DialContext: (&net.Dialer{
+				Timeout:   30 * time.Second,
+				KeepAlive: 30 * time.Second,
+				DualStack: true,
+			}).DialContext,
+			ForceAttemptHTTP2:     true,
+			MaxIdleConns:          MaxIdleConns,
+			MaxIdleConnsPerHost:   MaxIdleConnsPerHost,
+			IdleConnTimeout:       90 * time.Second,
+			TLSHandshakeTimeout:   10 * time.Second,
+			ExpectContinueTimeout: 1 * time.Second,
+		}}
+
 	for i := 0; i <= sc; i++ {
 		wg.Add(1)
 		go func(timeRun *time.Duration) {
