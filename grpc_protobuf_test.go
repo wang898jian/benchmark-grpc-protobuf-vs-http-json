@@ -41,6 +41,7 @@ func BenchmarkGRPCProtobuf(b *testing.B) {
 			for n := 0; n < b.N; n++ {
 				doGRPC(client, b)
 			}
+			waitgroup.Done()
 		}()
 	}
 	waitgroup.Wait()

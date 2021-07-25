@@ -32,6 +32,7 @@ func BenchmarkHTTPJSON(b *testing.B) {
 		for n := 0; n < b.N; n++ {
 			doPost(client, b)
 		}
+		waitgroup.Done()
 	}
 	waitgroup.Wait()
 
