@@ -94,8 +94,8 @@ func TestBenchmarkHTTPJSON(t *testing.T) {
 		}(&timeRun)
 	}
 	Duration := time.Since(timeBegin)
-	fmt.Printf("HTTPJSON main time is %+v\n", Duration)
 	wg.Wait()
+	fmt.Printf("HTTPJSON main time is %+v\n", Duration)
 }
 
 func doPost(client *http.Client, b *testing.T) {

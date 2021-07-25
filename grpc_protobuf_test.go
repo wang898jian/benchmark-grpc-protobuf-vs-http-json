@@ -57,8 +57,8 @@ func TestBenchmarkGRPCProtobuf(t *testing.T) {
 		}(&timeRun)
 	}
 	Duration := time.Since(timeBegin)
-	fmt.Printf("grpc main time is %+v\n", Duration)
 	waitgroup.Wait()
+	fmt.Printf("grpc main time is %+v\n", Duration)
 }
 
 func doGRPC(client proto.APIClient, t *testing.T) {
